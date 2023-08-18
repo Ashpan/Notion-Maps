@@ -133,6 +133,7 @@ const LocationMap: React.FC = () => {
           }
           console.log(locationMetadata)
           // console.log([...locations, locationMetadata]);
+          // @ts-ignore
           setLocations(prevLocations => [...prevLocations, locationMetadata]);
         }
         setIsLoading(false);
