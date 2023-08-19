@@ -100,7 +100,7 @@ const LocationMap: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const getDatabaseOptions = {
     method: 'POST',
-    url: 'https://api.notion.com/v1/databases/7eef035b-dfa2-4cc0-9131-734e8dc8414d/query',
+    url: 'https://cors-anywhere.herokuapp.com/https://thingproxy.freeboard.io/fetch/https://api.notion.com/v1/databases/7eef035b-dfa2-4cc0-9131-734e8dc8414d/query',
     headers: {
       accept: 'application/json',
       'Authorization': `Bearer ${process.env.NEXT_PUBLIC_NOTION_API_KEY}`,
@@ -111,12 +111,12 @@ const LocationMap: React.FC = () => {
 
   const getMapOptions = (address: String) => ({
     method: 'GET',
-    url: `https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`,
+    url: `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`,
   })
 
   const patchDatabaseOptions = (pageId: String, lat: number, long: number) => ({
     method: 'PATCH',
-    url: `https://cors-anywhere.herokuapp.com/https://api.notion.com/v1/pages/${pageId}`,
+    url: `https://api.notion.com/v1/pages/${pageId}`,
     headers: {
       accept: 'application/json',
       'Authorization': `Bearer ${process.env.NEXT_PUBLIC_NOTION_API_KEY}`,
