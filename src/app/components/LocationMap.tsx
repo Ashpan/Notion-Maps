@@ -98,25 +98,55 @@ interface LocationInterface {
 const LocationMap: React.FC = () => {
   const [locations, setLocations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const options = {
+  const getDatabaseOptions = {
     method: 'POST',
-    url: 'https://cors-anywhere.herokuapp.com/https://api.notion.com/v1/databases/7eef035b-dfa2-4cc0-9131-734e8dc8414d/query',
+    url: 'https://api.notion.com/v1/databases/7eef035b-dfa2-4cc0-9131-734e8dc8414d/query',
     headers: {
       accept: 'application/json',
       'Authorization': `Bearer ${process.env.NEXT_PUBLIC_NOTION_API_KEY}`,
       'Notion-Version': '2022-06-28',
-      'Access-Control-Allow-Origin': '*',
       'content-type': 'application/json'
     },
   };
+
+  const getMapOptions = (address: String) => ({
+    method: 'GET',
+    url: `https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`,
+  })
+
+  const patchDatabaseOptions = (pageId: String, lat: number, long: number) => ({
+    method: 'PATCH',
+    url: `https://cors-anywhere.herokuapp.com/https://api.notion.com/v1/pages/${pageId}`,
+    headers: {
+      accept: 'application/json',
+      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_NOTION_API_KEY}`,
+      'Notion-Version': '2022-06-28',
+      'content-type': 'application/json',
+      'X-Requested-With': "XMLHttpRequest"
+
+    },
+    data: {
+      "properties": {
+        "Latitude": lat,
+        "Longitude": long
+      }
+    }
+  });
+
   useEffect(() => {
+    const unfinishedLocations: any[] = [];
     // Fetch location data from Notion API
     axios
-      .request(options)
+      .request(getDatabaseOptions)
       .then(function async (response) {
-        // Iterate over each element in response and create a new object
         for (const location of response.data.results) {
-          console.log(location)
+          // Add location to unfinishedLocations if it doesn't have a latitude or longitude
+          if (location.properties.Latitude.number === null || location.properties.Longitude.number === null) {
+            console.log(location)
+            unfinishedLocations.push(location);
+            continue;
+          }
+
           let notes;
           try {
             notes = location.properties.Notes.rich_text[0].text.content;
@@ -124,8 +154,8 @@ const LocationMap: React.FC = () => {
             notes = '-';
           }
           const locationMetadata:LocationInterface = {
-            lat: parseFloat(location.properties.Latitude.rich_text[0].text.content),
-            long: parseFloat(location.properties.Longitude.rich_text[0].text.content),
+            lat: parseFloat(location.properties.Latitude.number),
+            long: parseFloat(location.properties.Longitude.number),
             name: location.properties.Name.title[0].text.content,
             type: location.properties.Type.multi_select.map((type: any) => type.name),
             notes: notes,
@@ -136,6 +166,51 @@ const LocationMap: React.FC = () => {
           // @ts-ignore
           setLocations(prevLocations => [...prevLocations, locationMetadata]);
         }
+
+        for (const location of unfinishedLocations) {
+          axios.request(getMapOptions(location.properties.Name.title[0].plain_text + ", " + location.properties.Address.rich_text[0].text.content))
+          .then(function (response) {
+            const { lat, lng } = response.data.results[0].geometry.location;
+            const numOfResults = response.data.results.length;
+            const relevantResult = response.data.results[numOfResults - 1];
+            const pageId = location.id;
+            console.log(location)
+            let url: string;
+            let notes: string;
+            try{
+              url = `https://www.google.com/maps/place/?q=place_id:${relevantResult.place_id}`
+            } catch (error) {
+              url = `https://www.google.com/maps?q=${lat},${lng}`
+            }
+            try {
+              notes = location.properties.Notes.rich_text[0].text.content;
+            } catch (error) {
+              notes = '-';
+            }
+            axios.request(patchDatabaseOptions(pageId, lat, lng))
+            .then(function (response) {
+              console.log(response.data);
+              const locationMetadata:LocationInterface = {
+                lat: lat,
+                long: lng,
+                name: location.properties.Name.title[0].plain_text,
+                type: location.properties.Type.multi_select.map((type: any) => type.name),
+                notes: notes,
+                url: url
+              }
+              // @ts-ignore
+              setLocations(prevLocations => [...prevLocations, locationMetadata]);
+            }).catch(function (error) {
+              console.error(error);
+            });
+            console.log(url);
+            console.log(relevantResult)
+
+          }).catch(function (error) {
+            console.error(error);
+          });
+        }
+
         setIsLoading(false);
       })
       .catch(function (error) {
