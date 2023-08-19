@@ -22,15 +22,21 @@ const LocationMap: React.FC = () => {
 
   const getServerOptions = {
     method: 'GET',
-    url: `https://notion-maps-server-a5idnyhud-ashpan.vercel.app/locations?databaseId=${process.env.NEXT_PUBLIC_NOTION_DATABASE_ID}`,
+    url: `https://notion-maps-server.vercel.app/locations?databaseId=${process.env.NEXT_PUBLIC_NOTION_DATABASE_ID}`,
     // url: `http://localhost:4000/locations?databaseId=${process.env.NEXT_PUBLIC_NOTION_DATABASE_ID}`,
   }
-
+  const axiosInstance = axios.create({
+    headers: {
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+    },
+  });
   useEffect(() => {
     // Fetch location data from Notion API
-    axios
+    axiosInstance
       .request(getServerOptions)
-      .then(function async (response) {
+      .then(function async(response) {
         setLocations(response.data);
         setIsLoading(false);
       })
@@ -42,14 +48,14 @@ const LocationMap: React.FC = () => {
     // Important! Always set the container height explicitly
     <div style={{ height: '100vh', width: '100%' }}>
       {!isLoading &&
-      <GoogleMapReact
-        bootstrapURLKeys={{ key: `${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}` }}
-        defaultCenter={TORONTO_CENTER}
-        defaultZoom={13}
-        yesIWantToUseGoogleMapApiInternals
-        onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps, locations)}
+        <GoogleMapReact
+          bootstrapURLKeys={{ key: `${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}` }}
+          defaultCenter={TORONTO_CENTER}
+          defaultZoom={13}
+          yesIWantToUseGoogleMapApiInternals
+          onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps, locations)}
 
-      />}
+        />}
     </div>
   );
 }
