@@ -58,6 +58,7 @@ const LocationMap: React.FC = () => {
 const handleApiLoaded = (map: any, maps: any, locations: any[]) => {
   const markers = [];
   const infowindows = [];
+  let currentInfoWindow: any = null;
 
   locations.forEach((location) => {
     const marker = new maps.Marker({
@@ -73,7 +74,12 @@ const handleApiLoaded = (map: any, maps: any, locations: any[]) => {
     });
 
     marker.addListener("click", () => {
+      if (currentInfoWindow) {
+        currentInfoWindow.close();
+      }
+
       infowindow.open(map, marker);
+      currentInfoWindow = infowindow;
     });
 
     markers.push(marker);
@@ -95,6 +101,7 @@ const getInfoWindowString = (place: any): string => `
       <div style="font-size: 14px; color: grey;">
         ${place.cuisine.join(' • ')}
       <div style="font-size: 14px; color: grey;">
+      </hr>
       ${place.notes}
     </div>
 

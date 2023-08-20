@@ -5,6 +5,5 @@ export const TORONTO_CENTER = {
 
 export const SERVER_OPTIONS = {
     method: 'GET',
-    url: `https://notion-maps-server.vercel.app/locations?databaseId=${process.env.NEXT_PUBLIC_NOTION_DATABASE_ID}`,
-    // url: `http://localhost:4000/locations?databaseId=${process.env.NEXT_PUBLIC_NOTION_DATABASE_ID}`,
+    url: `${process.env.NEXT_PUBLIC_ENDPOINT}/locations?databaseId=${process.env.NEXT_PUBLIC_NOTION_DATABASE_ID}`,
   }
