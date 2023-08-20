@@ -93,6 +93,8 @@ const getInfoWindowString = (place: any): string => `
         ${place.rating} ⭐️ • ${'$'.repeat(place.price)}
       </div>
       <div style="font-size: 14px; color: grey;">
+        ${place.cuisine.join(' • ')}
+      <div style="font-size: 14px; color: grey;">
       ${place.notes}
     </div>
 
