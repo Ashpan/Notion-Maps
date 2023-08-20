@@ -5,8 +5,7 @@ import axios from 'axios';
 import GoogleMapReact from 'google-map-react';
 import Pin from '../../../public/location-pin.png'
 import Image from 'next/image'
-import { TORONTO_CENTER } from '../constants';
-
+import { TORONTO_CENTER, SERVER_OPTIONS } from '../constants';
 
 
 interface MapProps {
@@ -20,11 +19,7 @@ const LocationMap: React.FC = () => {
   const [locations, setLocations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const getServerOptions = {
-    method: 'GET',
-    url: `https://notion-maps-server.vercel.app/locations?databaseId=${process.env.NEXT_PUBLIC_NOTION_DATABASE_ID}`,
-    // url: `http://localhost:4000/locations?databaseId=${process.env.NEXT_PUBLIC_NOTION_DATABASE_ID}`,
-  }
+
   const axiosInstance = axios.create({
     headers: {
       'Cache-Control': 'no-cache',
@@ -35,7 +30,7 @@ const LocationMap: React.FC = () => {
   useEffect(() => {
     // Fetch location data from Notion API
     axiosInstance
-      .request(getServerOptions)
+      .request(SERVER_OPTIONS)
       .then(function async(response) {
         setLocations(response.data);
         setIsLoading(false);
@@ -85,7 +80,7 @@ const handleApiLoaded = (map: any, maps: any, locations: any[]) => {
     infowindows.push(infowindow);
   });
 }
-
+// format the info window that contains the name of the place, the type of place, any notes, the rating out of 5, and how many dollar signs it is
 const getInfoWindowString = (place: any): string => `
     <div>
       <div style="font-size: 16px; color: black;">
@@ -95,8 +90,12 @@ const getInfoWindowString = (place: any): string => `
         ${place.type.join(' • ')}
       </div>
       <div style="font-size: 14px; color: grey;">
+        ${place.rating} ⭐️ • ${'$'.repeat(place.price)}
+      </div>
+      <div style="font-size: 14px; color: grey;">
       ${place.notes}
     </div>
+
     </div>`;
 
 

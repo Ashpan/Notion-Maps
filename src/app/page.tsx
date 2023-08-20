@@ -3,17 +3,16 @@
 import React from 'react';
 import LocationMap from './components/LocationMap';
 import axios from 'axios';
+import { SERVER_OPTIONS } from './constants';
 
 function Home() {
   return (
     <div>
       <button onClick={() => {
         axios
-          .request({
-            method: 'GET',
-            url: `https://notion-maps-server.vercel.app/locations?databaseId=${process.env.NEXT_PUBLIC_NOTION_DATABASE_ID}`,
-          })
+          .request(SERVER_OPTIONS)
           .then(function async(response) {
+            location.reload();
             console.log(response);
           })
           .catch(function (error) {
