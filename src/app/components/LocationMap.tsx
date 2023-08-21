@@ -18,6 +18,24 @@ interface MapProps {
 const LocationMap: React.FC = () => {
   const [locations, setLocations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentCenter, setCurrentCenter] = useState(TORONTO_CENTER); // Default center
+
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          setCurrentCenter({ lat, lng });
+        },
+        (error) => {
+          console.error('Error getting current location:', error);
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by this browser.');
+    }
+  };
 
 
   const axiosInstance = axios.create({
@@ -42,15 +60,19 @@ const LocationMap: React.FC = () => {
   return (
     // Important! Always set the container height explicitly
     <div style={{ height: '100vh', width: '100%' }}>
-      {!isLoading &&
+      {/* <button onClick={getCurrentLocation}>Current Location</button> */}
+      {!isLoading && (
         <GoogleMapReact
           bootstrapURLKeys={{ key: `${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}` }}
-          defaultCenter={TORONTO_CENTER}
+          center={currentCenter}
           defaultZoom={13}
           yesIWantToUseGoogleMapApiInternals
           onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps, locations)}
-
-        />}
+        />
+      )}
+      <button className="current-location-button" onClick={getCurrentLocation}>
+        &#8982; {/* Unicode crosshair symbol */}
+      </button>
     </div>
   );
 }

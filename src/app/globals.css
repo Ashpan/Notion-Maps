@@ -30,3 +30,17 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+.current-location-button {
+  position: absolute;
+  bottom: 100px;
+  right: 11px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  outline: none;
+}
