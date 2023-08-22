@@ -6,6 +6,8 @@ import { TORONTO_CENTER, SERVER_OPTIONS } from '../constants';
 interface Location {
   lat: number;
   long: number;
+  type: string[];
+  cuisine: string[];
 }
 
 interface MapProps {
@@ -19,13 +21,12 @@ interface FilterOptions {
   cuisine: string[];
 }
 
-// let infowindows: any = [];
-let markers = [];
-let infowindows = [];
+let markers: any = [];
+let infowindows: any = [];
 
 
 const LocationMap: React.FC<{ selectedFilters: { type: string[]; cuisine: string[] } }> = ({ selectedFilters }) => {
-  const [locations, setLocations] = useState([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentCenter, setCurrentCenter] = useState(TORONTO_CENTER); // Default center
   const [map, setMap] = useState(null);
@@ -123,8 +124,8 @@ const handleApiLoaded = (map: any, maps: any, locations: Location[]) => {
   console.log(locations)
 
   // Reset markers and infowindows
-  markers.forEach(marker => marker.setMap(null));
-  infowindows.forEach(infowindow => infowindow.close());
+  markers.forEach((marker: { setMap: (arg0: null) => any; }) => marker.setMap(null));
+  infowindows.forEach((infowindow: { close: () => any; }) => infowindow.close());
 
   markers = [];
   infowindows = [];
