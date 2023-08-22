@@ -44,3 +44,49 @@ body {
   line-height: 1;
   outline: none;
 }
+
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.filter-drawer {
+  position: absolute; /* Position the drawer within the stacking context */
+  z-index: 1; /* Ensure the drawer appears above the map */
+  pointer-events: auto;
+  /* ... other styles ... */
+}
+
+.map-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Adjust as needed */
+  z-index: 2; /* Ensure overlay content appears above the map */
+  pointer-events: none; /* Enable clicks on the overlay content */
+}
+
+.hamburger-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #333; /* Adjust color as needed */
+  padding: 0.5rem;
+  pointer-events: auto; /* Enable clicks on the button */
+}
+
+.reload-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #333; /* Adjust color as needed */
+  padding: 0.5rem;
+  pointer-events: auto; /* Enable clicks on the button */
+}

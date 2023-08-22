@@ -1,12 +1,12 @@
 import { use, useEffect, useState } from 'react';
 import axios from 'axios';
-// import { Map } from '@googlemaps/react-wrapper'
-// import { Marker } from '@googlemaps/react-wrapper'
 import GoogleMapReact from 'google-map-react';
-import Pin from '../../../public/location-pin.png'
-import Image from 'next/image'
 import { TORONTO_CENTER, SERVER_OPTIONS } from '../constants';
 
+interface Location {
+  lat: number;
+  long: number;
+}
 
 interface MapProps {
   text: string;
@@ -14,11 +14,22 @@ interface MapProps {
   lng: number;
 }
 
+interface FilterOptions {
+  type: string[];
+  cuisine: string[];
+}
 
-const LocationMap: React.FC = () => {
+// let infowindows: any = [];
+let markers = [];
+let infowindows = [];
+
+
+const LocationMap: React.FC<{ selectedFilters: { type: string[]; cuisine: string[] } }> = ({ selectedFilters }) => {
   const [locations, setLocations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentCenter, setCurrentCenter] = useState(TORONTO_CENTER); // Default center
+  const [map, setMap] = useState(null);
+  const [maps, setMaps] = useState(null);
 
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
@@ -56,7 +67,34 @@ const LocationMap: React.FC = () => {
       .catch(function (error) {
         console.error(error);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+
+  // Filter locations based on selected filters
+  const filteredLocations = locations.filter(location => {
+    if (
+      selectedFilters.type.length === 0 ||
+      selectedFilters.type.some(selectedType => location.type.includes(selectedType))
+    ) {
+      if (
+        selectedFilters.cuisine.length === 0 ||
+        selectedFilters.cuisine.some(selectedCuisine => location.cuisine.includes(selectedCuisine))
+      ) {
+        return true;
+      }
+    }
+    return false;
+  });
+
+  // when the filtered locations change, update the map
+  useEffect(() => {
+    if (!isLoading && map && maps) {
+      console.log(maps);
+      handleApiLoaded(map, maps, filteredLocations);
+    }
+  }, [filteredLocations, isLoading, map, maps]);
+
   return (
     // Important! Always set the container height explicitly
     <div style={{ height: '100vh', width: '100%' }}>
@@ -67,7 +105,11 @@ const LocationMap: React.FC = () => {
           center={currentCenter}
           defaultZoom={13}
           yesIWantToUseGoogleMapApiInternals
-          onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps, locations)}
+          onGoogleApiLoaded={({ map: loadedMap, maps: loadedMaps }) => {
+            setMap(loadedMap);
+            setMaps(loadedMaps);
+            // handleApiLoaded(loadedMap, loadedMaps, filteredLocations)
+          }}
         />
       )}
       <button className="current-location-button" onClick={getCurrentLocation}>
@@ -77,9 +119,15 @@ const LocationMap: React.FC = () => {
   );
 }
 
-const handleApiLoaded = (map: any, maps: any, locations: any[]) => {
-  const markers = [];
-  const infowindows = [];
+const handleApiLoaded = (map: any, maps: any, locations: Location[]) => {
+  console.log(locations)
+
+  // Reset markers and infowindows
+  markers.forEach(marker => marker.setMap(null));
+  infowindows.forEach(infowindow => infowindow.close());
+
+  markers = [];
+  infowindows = [];
   let currentInfoWindow: any = null;
 
   locations.forEach((location) => {
@@ -108,6 +156,8 @@ const handleApiLoaded = (map: any, maps: any, locations: any[]) => {
     infowindows.push(infowindow);
   });
 }
+
+
 // format the info window that contains the name of the place, the type of place, any notes, the rating out of 5, and how many dollar signs it is
 const getInfoWindowString = (place: any): string => `
     <div>
