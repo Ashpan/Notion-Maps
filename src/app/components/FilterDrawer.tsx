@@ -55,7 +55,7 @@ const FilterDrawer: React.FC<FilterProps> = ({ filters, selectedFilters, setSele
 
 
   return (
-    <div className="filter-drawer fixed inset-y-0 right-0 w-1/6 bg-white border-l border-gray-300 shadow-lg">
+    <div className="filter-drawer fixed inset-y-0 right-0 w-1/3 bg-white border-l border-gray-300 shadow-lg">
       <div className="mb-4">
         <h3 className="text-sm font-medium">Type</h3>
         <label className="block mt-1">
