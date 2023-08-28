@@ -105,6 +105,7 @@ const LocationMap: React.FC<{ selectedFilters: { type: string[]; cuisine: string
           bootstrapURLKeys={{ key: `${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}` }}
           center={currentCenter}
           defaultZoom={13}
+          options={{ gestureHandling: "greedy"}}  // Allow map panning on mobile
           yesIWantToUseGoogleMapApiInternals
           onGoogleApiLoaded={({ map: loadedMap, maps: loadedMaps }) => {
             setMap(loadedMap);
