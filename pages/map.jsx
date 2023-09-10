@@ -13,17 +13,10 @@ import { DB_CONFIG_OPTIONS, SERVER_OPTIONS } from "../constants";
 function Map() {
   const router = useRouter();
   const { user, isLoading } = useUser();
-  const [authNotion, setAuthNotion] = useState(false);
 
   const [showFilters, setShowFilters] = useState(false);
-  const [filterOptions, setFilterOptions] = useState({
-    type: [],
-    cuisine: [],
-  });
-  const [selectedFilters, setSelectedFilters] = useState({
-    type: [],
-    cuisine: [],
-  });
+  const [filterOptions, setFilterOptions] = useState({});
+  const [selectedFilters, setSelectedFilters] = useState({});
 
   useEffect(() => {
     if (!isLoading) {
@@ -59,18 +52,15 @@ function Map() {
     axios
       .request(DB_CONFIG_OPTIONS(user.name))
       .then((response) => {
-        const { cuisine, type } = response.data;
-        setFilterOptions({
-          type: type,
-          cuisine: cuisine,
-        });
+        setFilterOptions(response.data);
+        setSelectedFilters(
+          Object.fromEntries(Object.keys(response.data).map((key) => [key, []]))
+        );
       })
       .catch((error) => {
         console.error("Error fetching filter options:", error);
       });
   }, []);
-
-  console.log("user", user);
 
   return (
     !isLoading && (
@@ -106,7 +96,7 @@ function Map() {
             />
           )}
         </div>
-        <LocationMap selectedFilters={selectedFilters} userId={user.name} />
+        <LocationMap filters={filterOptions} selectedFilters={selectedFilters} userId={user.name} />
       </div>
     )
   );
