@@ -18,6 +18,11 @@ function Map() {
   const [filterOptions, setFilterOptions] = useState({});
   const [selectedFilters, setSelectedFilters] = useState({});
 
+  // Function to toggle filter menu visibility
+  const toggleFilterMenu = () => {
+    setShowFilters(!showFilters);
+  };
+
   useEffect(() => {
     if (!isLoading) {
       const userId = user.name;
@@ -66,10 +71,7 @@ function Map() {
     !isLoading && (
       <div className="map-container">
         <div className="map-overlay">
-          <button
-            className="hamburger-button"
-            onClick={() => setShowFilters(!showFilters)}
-          >
+          <button className="hamburger-button" onClick={toggleFilterMenu}>
             <FontAwesomeIcon icon={faBars} /> {/* Hamburger icon */}
           </button>
           <button
@@ -89,14 +91,26 @@ function Map() {
             <FontAwesomeIcon icon={faRefresh} />
           </button>
           {showFilters && (
-            <FilterDrawer
-              filters={filterOptions}
-              selectedFilters={selectedFilters}
-              setSelectedFilters={setSelectedFilters}
-            />
+            <div className={`filter-drawer ${showFilters ? "show" : ""}`}>
+              {/* Close button for the filter menu */}
+              <button className="close-button" onClick={toggleFilterMenu}>
+                &times; {/* Unicode "times" symbol (close icon) */}
+              </button>
+
+              {/* FilterDrawer component */}
+              <FilterDrawer
+                filters={filterOptions}
+                selectedFilters={selectedFilters}
+                setSelectedFilters={setSelectedFilters}
+              />
+            </div>
           )}
         </div>
-        <LocationMap filters={filterOptions} selectedFilters={selectedFilters} userId={user.name} />
+        <LocationMap
+          filters={filterOptions}
+          selectedFilters={selectedFilters}
+          userId={user.name}
+        />
       </div>
     )
   );
