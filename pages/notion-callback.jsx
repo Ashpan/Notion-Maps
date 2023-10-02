@@ -19,7 +19,6 @@ const NotionCallback = () => {
       });
 
       const code = router.query.code;
-      console.log("code", code);
       if (code) {
         const params = new URLSearchParams([["userId", userId]]);
 

@@ -9,7 +9,6 @@ const FilterDrawer = ({ filters, selectedFilters, setSelectedFilters }) => {
         : prevFilters[category].filter(item => item !== option),
     }));
   };
-
   return (
     <div className="filter-drawer fixed inset-y-0 right-0 w-1/3 bg-white border-l border-gray-300 shadow-lg">
       {Object.entries(filters).map(([category, options]) => (

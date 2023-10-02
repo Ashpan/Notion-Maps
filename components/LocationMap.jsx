@@ -2,6 +2,7 @@ import axios from "axios";
 import GoogleMapReact from "google-map-react";
 import { useEffect, useState } from "react";
 import { SERVER_OPTIONS, TORONTO_CENTER } from "../constants";
+import { BlueMarkerIcon, GreenMarkerIcon, PinkMarkerIcon, PurpleMarkerIcon, RedMarkerIcon } from "./Marker";
 
 let markers = [];
 let infoWindows = [];
@@ -20,6 +21,10 @@ const LocationMap = ({ filters, selectedFilters, userId }) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
           setCurrentCenter({ lat, lng });
+          if(map) {
+            map.setCenter({ lat, lng });
+            map.setZoom(16);
+          }
         },
         (error) => {
           console.error("Error getting current location:", error);
@@ -55,14 +60,11 @@ const LocationMap = ({ filters, selectedFilters, userId }) => {
     // Check each filter category
     for (const category in selectedFilters) {
       const selectedOptions = selectedFilters[category];
-      console.log({ location });
-      console.log({ category });
-      console.log({ selectedOptions });
-      // If any selected option in the category is included in location's category, return true
+      const locationOptions = location[category].map((opt) => opt.name);
       if (
         selectedOptions.length === 0 ||
         selectedOptions.some((selectedOption) =>
-          location[category].includes(selectedOption)
+          locationOptions.includes(selectedOption)
         )
       ) {
         continue;
@@ -79,7 +81,6 @@ const LocationMap = ({ filters, selectedFilters, userId }) => {
   const filteredLocations = locations.filter((location) =>
     filterLocations(location, selectedFilters)
   );
-
   useEffect(() => {
     if (!isLoading && map && maps) {
       handleApiLoaded(map, maps, filteredLocations, filters);
@@ -119,14 +120,39 @@ const handleApiLoaded = (map, maps, locations, filters) => {
   let currentInfoWindow = null;
 
   locations.forEach((location) => {
+    let markerIcon = null;
+    for(const filter in filters) {
+      if(location[filter].length > 0) {
+        switch (location[filter][0].colour){
+          case "blue":
+            markerIcon = BlueMarkerIcon(maps);
+            break;
+          case "green":
+            markerIcon = GreenMarkerIcon(maps);
+            break;
+          case "red":
+            markerIcon = RedMarkerIcon(maps);
+            break;
+          case "pink":
+            markerIcon = PinkMarkerIcon(maps);
+            break;
+          case "purple":
+            markerIcon = PurpleMarkerIcon(maps);
+            break;
+          default:
+            markerIcon = RedMarkerIcon(maps);
+            break;
+        }
+      }
+    }
     const marker = new maps.Marker({
       position: {
         lat: location.lat,
         lng: location.long,
       },
       map,
+      icon: markerIcon
     });
-    console.log(Object.keys(filters));
     const infoWindow = new maps.InfoWindow({
       content: getInfoWindowString(location, filters),
     });
@@ -157,10 +183,11 @@ const getInfoWindowString = (place, filters) => `
       ${place.notes}
       ${Object.keys(filters)
         .map((filter) => {
+          const categories = place[filter].map((opt) => opt.name)
           if (place[filter] && place[filter].length > 0) {
             return `
             <div style="font-size: 14px; color: grey;">
-              ${place[filter].join(" • ")}
+              ${categories.join(" • ")}
             </div>
           `;
           }
