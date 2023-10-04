@@ -120,8 +120,11 @@ const handleApiLoaded = (map, maps, locations, filters) => {
   let currentInfoWindow = null;
 
   locations.forEach((location) => {
-    let markerIcon = null;
+    let markerIcon = RedMarkerIcon(maps);
     for(const filter in filters) {
+      if (location.name === "Death in Venice") {
+        console.log({locfilt: location[filter], filter})
+      }
       if(location[filter].length > 0) {
         switch (location[filter][0].colour){
           case "blue":
@@ -138,9 +141,6 @@ const handleApiLoaded = (map, maps, locations, filters) => {
             break;
           case "purple":
             markerIcon = PurpleMarkerIcon(maps);
-            break;
-          default:
-            markerIcon = RedMarkerIcon(maps);
             break;
         }
       }
