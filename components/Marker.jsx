@@ -34,3 +34,10 @@ export const PurpleMarkerIcon = (maps) => {
     scaledSize: markerDimensions(maps),
   };
 };
+
+export const CurrentLocationMarkerIcon = (maps) => {
+  return {
+    url: "https://i.imgur.com/axdTzJh.png",
+    scaledSize: new maps.Size(30, 30),
+  }
+};

@@ -2,7 +2,7 @@ import axios from "axios";
 import GoogleMapReact from "google-map-react";
 import { useEffect, useState } from "react";
 import { SERVER_OPTIONS, TORONTO_CENTER } from "../constants";
-import { BlueMarkerIcon, GreenMarkerIcon, PinkMarkerIcon, PurpleMarkerIcon, RedMarkerIcon } from "./Marker";
+import { BlueMarkerIcon, CurrentLocationMarkerIcon, GreenMarkerIcon, PinkMarkerIcon, PurpleMarkerIcon, RedMarkerIcon } from "./Marker";
 
 let markers = [];
 let infoWindows = [];
@@ -13,6 +13,7 @@ const LocationMap = ({ filters, selectedFilters, userId }) => {
   const [currentCenter, setCurrentCenter] = useState(TORONTO_CENTER);
   const [map, setMap] = useState(null);
   const [maps, setMaps] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState(null);
 
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
@@ -21,6 +22,7 @@ const LocationMap = ({ filters, selectedFilters, userId }) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
           setCurrentCenter({ lat, lng });
+          setCurrentLocation({ lat, lng});
           if(map) {
             map.setCenter({ lat, lng });
             map.setZoom(16);
@@ -87,6 +89,17 @@ const LocationMap = ({ filters, selectedFilters, userId }) => {
     }
   }, [filteredLocations, isLoading, map, maps]);
 
+  useEffect(() => {
+    if (currentLocation && map && maps) {
+      const marker = new maps.Marker({
+        position: currentLocation,
+        map,
+        icon: CurrentLocationMarkerIcon(maps)
+      });
+      markers.push(marker)
+    }
+  }, [currentLocation, map, maps]);
+
   return (
     <div style={{ height: "100vh", width: "100%" }}>
       {!isLoading && (
@@ -122,9 +135,6 @@ const handleApiLoaded = (map, maps, locations, filters) => {
   locations.forEach((location) => {
     let markerIcon = RedMarkerIcon(maps);
     for(const filter in filters) {
-      if (location.name === "Death in Venice") {
-        console.log({locfilt: location[filter], filter})
-      }
       if(location[filter].length > 0) {
         switch (location[filter][0].colour){
           case "blue":
