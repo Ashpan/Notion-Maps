@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+p code {
+  color: var(--secondary);
+  font-weight: 600;
+}
+
+#__next {
+  height: 100%;
+}
+
+#nav-mobile {
+  min-height: 170px;
+}
+
+.nav-item.dropdown .dropdown-item {
+  padding: 0;
+}
+
+.nav-item.dropdown .dropdown-item a {
+  color: inherit;
+}
+
+.nav-item.dropdown .dropdown-item .navbar-item {
+  width: 100%;
+  padding: .55rem 1.5rem;
+}
+
+.result-block-container .result-block {
+  opacity: 1;
+}
+
+
+
+/* :root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+} */
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+} */
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+.current-location-button {
+  position: absolute;
+  bottom: 100px;
+  right: 11px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  outline: none;
+}
+
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 95vh;
+}
+
+/* .filter-drawer {
+  position: absolute;
+  z-index: 1;
+  pointer-events: auto;
+} */
+
+.filter-drawer {
+  position: absolute;
+  top: 0;
+  right: 0; /* Align the filter menu to the right */
+  width: 300px; /* Adjust the width as needed */
+  background-color: white; /* Set the background color */
+  border-left: 1px solid #ccc; /* Add a border for separation */
+  box-shadow: -2px 0px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+  z-index: 3; /* Ensure the filter menu appears above the overlay content */
+  display: flex;
+  flex-direction: column; /* Display checkboxes vertically */
+  padding: 1rem; /* Add some padding for spacing */
+  pointer-events: auto; /* Enable clicks on the filter menu */
+}
+
+/* Close button styles */
+.close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #333; /* Adjust color as needed */
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.map-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Adjust as needed */
+  z-index: 2; /* Ensure overlay content appears above the map */
+  pointer-events: none; /* Enable clicks on the overlay content */
+}
+
+.hamburger-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #333; /* Adjust color as needed */
+  padding: 0.5rem;
+  pointer-events: auto; /* Enable clicks on the button */
+}
+
+.reload-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #333; /* Adjust color as needed */
+  padding: 0.5rem;
+  pointer-events: auto; /* Enable clicks on the button */
+}
